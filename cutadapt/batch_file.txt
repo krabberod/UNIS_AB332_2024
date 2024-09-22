@@ -1,0 +1,1 @@
+230623_SN6662_A_L001_AQPG-49_R1.fastq.gz	230623_SN6662_A_L001_AQPG-49_R2.fastq.gz	VT_map_FWD.fasta	VT_map_REV.fasta

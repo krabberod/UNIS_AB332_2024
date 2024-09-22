@@ -1,0 +1,144 @@
+---
+title: " Community ecology - Computer lab II - AB332"
+author: "Anders K. Krabberød (UiO) and Ramiro Logares (ICM)"
+date: "October 2024"
+output:
+  html_notebook: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+# Computer lab II
+
+First load the necessary packages.
+```{r,include=FALSE}
+library(vegan)
+library(tidyverse)
+library(PCAtools)
+library(recluster)
+```
+
+Now load the the data from the previous lab (change path to the file if necessary):
+```{r}
+load("AB332_lab_I.RData")
+```
+
+
+# Distance metrics
+Let's calculate the Bray Curtis dissimilarities for the rarefied dataset
+```{r}
+otu.tab.trans.ss.nozero.bray <- vegdist(otu.tab.trans.ss.nozero, method = "bray")
+as.matrix(otu.tab.trans.ss.nozero.bray)[1:5, 1:5]
+```
+ - *What kind of data is the Bray-Curtis dissimilarity suitable for?* 
+ - *How can you change the dissimilarity index in the previous chunk of code?*  
+
+# Ordination and clustering
+
+## PCA
+Pca from the rarefied table
+```{r}
+otu.tab.trans.ss.nozero.pca <- PCAtools::pca(t(otu.tab.trans.ss.nozero), scale = FALSE) # Runs de PCA
+biplot(otu.tab.trans.ss.nozero.pca, showLoadings = T, lab = rownames(otu.tab.trans.ss.nozero)) # Plots the PCA
+screeplot(otu.tab.trans.ss.nozero.pca, axisLabSize = 18, titleLabSize = 22) # We plot the percentage of variance explained by each axis
+```
+
+
+## NMDS
+We will define the function NMDS.scree() that automatically performs a NMDS for 1-7 dimensions and plots the number of dimensions vs. stress
+
+
+```{r}
+
+set.seed(666) # Set a seed to make results reproducible
+NMDS.scree <- function(x) { # x is the name of the distance matrix
+  plot(rep(1, 7), replicate(7, metaMDS(x, autotransform = FALSE, k = 1)$stress), xlim = c(1, 7), ylim = c(0, 0.30), xlab = "# of Dimensions", ylab = "Stress", main = "NMDS stress plot")
+  for (i in 1:7) {
+    points(rep(i + 1, 7), replicate(7, metaMDS(x, autotransform = FALSE, k = i + 1)$stress))
+  }
+}
+```
+
+Using the function to determine the optimal number of dimensions
+Using the rarefied table
+```{r,include=FALSE}
+ NMDS.scree(otu.tab.trans.ss.nozero.bray)
+```
+
+
+We calculate NMDS for k(dimensions)=2
+Rarefied table (we use the dataframe to have access to sample and OTU names)
+```{r}
+otu.tab.trans.ss.nozero.bray.nmds <- metaMDS(otu.tab.trans.ss.nozero, k = 2, trymax = 100, trace = FALSE, autotransform = FALSE, distance = "bray")
+otu.tab.trans.ss.nozero.bray.nmds
+```
+
+# Make stressplot
+
+```{r}
+stressplot(otu.tab.trans.ss.nozero.bray.nmds) 
+```
+
+Simple plotting  
+Rarefied table
+```{r}
+plot(otu.tab.trans.ss.nozero.bray.nmds, display = "sites", type = "n")
+points(otu.tab.trans.ss.nozero.bray.nmds, display = "sites", col = "red", pch = 19)
+text(otu.tab.trans.ss.nozero.bray.nmds, display = "sites")
+```
+
+### Let's make nicer plots
+We get the seasons for samples
+
+```{r}
+isa.metadata <- read_tsv("https://raw.githubusercontent.com/krabberod/UNIS_AB332_2022/main/computer_lab/data/AB332metadata_v3.txt")
+isa.metadata <- column_to_rownames(isa.metadata, var = "Sample_Name")
+isa.metadata.simp <- isa.metadata[6:30, ]
+```
+
+Rarefied table
+We generate a table of nmds scores and other features
+
+```{r}
+otu.tab.trans.ss.nozero.bray.nmds.scores <- as.data.frame(scores(otu.tab.trans.ss.nozero.bray.nmds)$sites)
+otu.tab.trans.ss.nozero.bray.nmds.scores$season <- isa.metadata.simp$seasons
+otu.tab.trans.ss.nozero.bray.nmds.scores$month <- as.factor(isa.metadata.simp$month)
+otu.tab.trans.ss.nozero.bray.nmds.scores$samples <- rownames(otu.tab.trans.ss.nozero.bray.nmds.scores)
+```
+
+Create the plot
+```{r}
+ggplot(otu.tab.trans.ss.nozero.bray.nmds.scores) +
+  geom_point(mapping = aes(x = NMDS1, y = NMDS2, colour = season), size = 3) +
+  coord_fixed() + ## need aspect ratio of 1!
+  geom_text_repel(
+    box.padding = 0.5, aes(x = NMDS1, y = NMDS2, label = samples),
+    size = 3
+  )
+```
+
+#Clustering of samples
+
+Allows determining the similarity between samples as well as the organization of samples in groups.
+Hierarchical clustering: samples will be organized in ranks according to their similarity and all samples will be included in a large group Unweighted Pair-Group Method Using Arithmetic Averages (UPGMA): This linkage method will link samples by considering their distance to a subgroup arithmetic average. This is a method widely used in ecology
+
+### UPGMA
+Rarefied dataset
+We generate 100 trees by re-sampling and then, we plot the consensus tree
+```{r}
+otu.tab.trans.ss.nozero.bray.upgma <- recluster.cons(otu.tab.trans.ss.nozero.bray, tr = 100, p = 0.5, method = "average")
+plot(otu.tab.trans.ss.nozero.bray.upgma$cons) # plot consensus tree
+```
+
+We'll calculate bootstrap support values (0: bad - 100: perfect)
+This allows us to know how well supported is the branching pattern
+The boostrapping function may take a while to run (depending on your computer)
+```{r}
+otu.tab.trans.ss.nozero.bray.upgma.boot <- recluster.boot(otu.tab.trans.ss.nozero.bray.upgma$cons, otu.tab.trans.ss.nozero, tr = 100, p = 0.5, method = "average", boot = 1000, level = 1)
+recluster.plot(otu.tab.trans.ss.nozero.bray.upgma$cons, otu.tab.trans.ss.nozero.bray.upgma.boot, direction="right") # We add bootstrap values to the branching pattern
+```
+
+
+```{r}
+save.image("AB332_lab_II.RData")
+```
