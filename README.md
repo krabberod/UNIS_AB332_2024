@@ -1,4 +1,4 @@
-# UNIS_AB332_2024
+# UNIS AB332 2024
 Course material for AB332,  Autumn 2024
 [Click here for R setup. ](setup/)
 
