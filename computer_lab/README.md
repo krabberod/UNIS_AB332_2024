@@ -11,7 +11,7 @@ There are three main script
 - [Computer lab III](Computer_lab_III.Rmd)
 
 And accompanying presentation for the terms ann analyses: 
- - [Community ecology presentation](../Lectures/Community.Ecology.ComputerLab.pdf)
+ - [Community ecology presentation](../Lectures/Community_Ecology_ComputerLab_2024.pdf)
 
 Example scripts:
 [Barplot_examples.R](Barplot_examples.R) shows how you can subset data and make barplots of the Otu table. 
