@@ -13,7 +13,7 @@ The R-scripts for the Computer lab are [here](computer_lab/).
 |               | 11:15-12:00 | [Clustering and denoising](./Lectures/Clustering_lecture_2024.pdf)                               |
 |               | 12:00-13:00 | _Lunch break_                                                                                    |
 |               | 13:15-14:00 | [Introduction to R](./Lectures/introduction_to_R_2024.pdf)                                       |
-|               | 14:15-15:00 | [Introduction to RStudio](./Lectures/introduction_to_Rstudio_2024.pdf)                           |
+|               | 14:15-15:00 | [Introduction to RStudio](./Lectures/Introduction_to_Rstudio_2024.pdf)                           |
 |               | 15:15-17:00 | [Computer lab I](computer_lab/)                                                                  |
 | **Wednesday** | 09:15-12:00 | [Computer lab II](computer_lab/)                                                                 |
 |               | 12:00-13:00 | _Lunch break_                                                                                    |
