@@ -7,6 +7,8 @@ output:
   pdf_document: default
   html_document:
     df_print: paged
+editor_options: 
+  chunk_output_type: inline
 ---
 # Computer lab II
 
@@ -117,7 +119,7 @@ ggplot(otu.tab.trans.ss.nozero.bray.nmds.scores) +
   )
 ```
 
-#Clustering of samples
+# Clustering of samples
 
 Allows determining the similarity between samples as well as the organization of samples in groups.
 Hierarchical clustering: samples will be organized in ranks according to their similarity and all samples will be included in a large group Unweighted Pair-Group Method Using Arithmetic Averages (UPGMA): This linkage method will link samples by considering their distance to a subgroup arithmetic average. This is a method widely used in ecology
@@ -135,9 +137,18 @@ This allows us to know how well supported is the branching pattern
 The boostrapping function may take a while to run (depending on your computer)
 ```{r}
 otu.tab.trans.ss.nozero.bray.upgma.boot <- recluster.boot(otu.tab.trans.ss.nozero.bray.upgma$cons, otu.tab.trans.ss.nozero, tr = 100, p = 0.5, method = "average", boot = 1000, level = 1)
-recluster.plot(otu.tab.trans.ss.nozero.bray.upgma$cons, otu.tab.trans.ss.nozero.bray.upgma.boot, direction="right") # We add bootstrap values to the branching pattern
-```
 
+#recluster.plot(otu.tab.trans.ss.nozero.bray.upgma$cons, otu.tab.trans.ss.nozero.bray.upgma.boot, direction="right") # We add bootstrap values to the branching pattern
+```
+New plot
+```{r}
+library(ape)
+tree <- otu.tab.trans.ss.nozero.bray.upgma$cons
+boot <- as.data.frame(otu.tab.trans.ss.nozero.bray.upgma.boot)$V1
+plot.phylo(tree, direction = "right")
+nodelabels(boot, frame = "none", cex = 0.6, col = "red")
+
+```
 
 ```{r}
 save.image("AB332_lab_II.RData")

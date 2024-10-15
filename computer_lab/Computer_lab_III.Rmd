@@ -59,7 +59,7 @@ isa.metadata.cont <- isa.metadata.simp %>% dplyr::select("nitrate","phosphate","
 
 We transform variables using z-scores to have comparable ranges of variation.
 ```{r}
-isa.metadata.cont.zscores <-scale(isa.metadata.cont, center = T, scale = T)
+isa.metadata.cont.zscores <- scale(isa.metadata.cont, center = T, scale = T)
 isa.metadata.cont.zscores[1:5,]
 ```
 
@@ -78,7 +78,7 @@ env.corr.signif.r <- env.corr.signif.adjust$R$r
 env.corr.signif.p <- env.corr.signif.adjust$P
 # Edit the object to replace any "<" by "0" using the function "gsub"
 env.corr.signif.p <- gsub("<","0", env.corr.signif.p)
-# We modify the object to be numeric datatype.
+# Modify the object to be numeric datatype.
 # NB: the transformation is done so the matrix of p values can be read as numeric!
 env.corr.signif.p <- apply(env.corr.signif.p, 2 ,as.numeric)
 rownames(env.corr.signif.p) <- colnames(env.corr.signif.p)
@@ -149,7 +149,7 @@ In the following sections we will use `ggord` for more control of the ordination
 isa.rarified.db <- dbrda(formula = otu.tab.trans.ss.nozero.bray ~ silicate+temp_25+sal_25+F_25+phosphate, data = as.data.frame(isa.metadata.cont.zscores))
 
 stats::screeplot(isa.rarified.db)
-ggord(isa.rarified.db)
+ggord(isa.rarified.db, axes = c("1", "2"))
 ```
 The plot wasn't very pretty. Specifying limits to the plot might help:
 
