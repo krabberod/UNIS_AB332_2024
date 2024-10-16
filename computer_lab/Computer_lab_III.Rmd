@@ -136,7 +136,7 @@ mod1.rarefaction
 
 Finally do the stepwise selection of variables:
 ```{r}
-ordistep(mod0.rarefaction, scope = formula(mod1.rarefaction), perm.max = 1000, direction="forward")
+ordistep(mod0.rarefaction, scope = formula(mod1.rarefaction), perm.max = 1000, direction="both")
 ```
 *Can you see which variables were selected?*  
 When doing a stepwise building of models you can this either "forward" (as in the example), "backwards", or "both". Try different methods and see if the end result is any different.

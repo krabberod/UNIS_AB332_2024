@@ -11,6 +11,8 @@ remotes::install_github("vmikk/metagMisc")
 library(phyloseq)
 library(microbiome)
 library(RColorBrewer)
+library(metagMisc)
+library(tidyverse)
 
 
 otu.tab <- read_tsv("https://raw.githubusercontent.com/krabberod/UNIS_AB332_2024/main/computer_lab/data/AB332_otutab_reduc3.txt") %>%
@@ -49,7 +51,7 @@ plot_bar(isa.phyloseq.rel,fill = "Supergroup") +
   geom_bar(stat = "identity") +
   theme_bw(base_size = 8)+
   theme(legend.key.size = unit(0.2, "cm")) +
-  theme(axis.title.x = element_blank() ,axis.text.x  = element_text(angle=90)) +
+  theme(axis.title.x = element_blank() ,axis.text.x  = element_text(angle=45)) +
   ylab("Relative Abundance\n") +
   ggtitle("All groups")
 
@@ -105,9 +107,3 @@ ggplot(ntax, aes(fill=Supergroup, y=N.OTU, x=Sample)) +
   theme(legend.key.size = unit(0.2, "cm")) 
 
 
-
-ggplot(merged_table, aes(fill=Supergroup, y=N.OTU, x=Sample)) + 
-  geom_bar(position="stack", stat="identity") +
-  scale_fill_manual(values = colorRampPalette(brewer.pal(11,"Paired"))(39),name="Supergroup") +
-  theme_bw(base_size = 8)+
-  theme(legend.key.size = unit(0.2, "cm")) 

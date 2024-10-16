@@ -40,7 +40,7 @@ as.matrix(otu.tab.trans.ss.nozero.bray)[1:5, 1:5]
 ## PCA
 Pca from the rarefied table
 ```{r}
-otu.tab.trans.ss.nozero.pca <- PCAtools::pca(t(otu.tab.trans.ss.nozero), scale = FALSE) # Runs de PCA
+otu.tab.trans.ss.nozero.pca <- PCAtools::pca(t(otu.tab.trans.ss.nozero), scale = FALSE) # Runs the PCA
 biplot(otu.tab.trans.ss.nozero.pca, showLoadings = T, lab = rownames(otu.tab.trans.ss.nozero)) # Plots the PCA
 screeplot(otu.tab.trans.ss.nozero.pca, axisLabSize = 18, titleLabSize = 22) # We plot the percentage of variance explained by each axis
 ```
@@ -111,7 +111,7 @@ otu.tab.trans.ss.nozero.bray.nmds.scores$samples <- rownames(otu.tab.trans.ss.no
 Create the plot
 ```{r}
 ggplot(otu.tab.trans.ss.nozero.bray.nmds.scores) +
-  geom_point(mapping = aes(x = NMDS1, y = NMDS2, colour = season), size = 3) +
+  geom_point(mapping = aes(x = NMDS1, y = NMDS2, colour = month, shape = season), size = 3) +
   coord_fixed() + ## need aspect ratio of 1!
   geom_text_repel(
     box.padding = 0.5, aes(x = NMDS1, y = NMDS2, label = samples),
@@ -137,16 +137,14 @@ This allows us to know how well supported is the branching pattern
 The boostrapping function may take a while to run (depending on your computer)
 ```{r}
 otu.tab.trans.ss.nozero.bray.upgma.boot <- recluster.boot(otu.tab.trans.ss.nozero.bray.upgma$cons, otu.tab.trans.ss.nozero, tr = 100, p = 0.5, method = "average", boot = 1000, level = 1)
-
-#recluster.plot(otu.tab.trans.ss.nozero.bray.upgma$cons, otu.tab.trans.ss.nozero.bray.upgma.boot, direction="right") # We add bootstrap values to the branching pattern
 ```
-New plot
+Use Ape to plot
 ```{r}
 library(ape)
 tree <- otu.tab.trans.ss.nozero.bray.upgma$cons
 boot <- as.data.frame(otu.tab.trans.ss.nozero.bray.upgma.boot)$V1
-plot.phylo(tree, direction = "right")
-nodelabels(boot, frame = "none", cex = 0.6, col = "red")
+plot.phylo(tree, type = "cladogram")
+nodelabels(boot, frame = "none", cex = 1, col = "red")
 
 ```
 
